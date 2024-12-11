@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: kafka-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka-kafka
+    ports:
+      - "9099:9099"  # Expose Kafka on port 9099 for both internal and external
+      - "9098:9098"  # Expose Kafka on port 9098 for external
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9099,EXTERNAL://192.168.18.27:9098  # Use different ports for listeners
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9099,EXTERNAL://0.0.0.0:9098  # Use different ports for listeners
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT  # Map listener names to security protocols
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT  # Define the inter-broker listener
+      KAFKA_ZOOKEEPER_CONNECT: kafka-zookeeper:2181
+      KAFKA_MESSAGE_MAX_BYTES: 52428800  # Set max message size to 50MB
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 52428800  # Set max fetch size to 50MB
+    depends_on:
+      - zookeeper
