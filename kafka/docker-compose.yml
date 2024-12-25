@@ -11,6 +11,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
+    restart: always
 
   kafka:
     image: wurstmeister/kafka
@@ -28,3 +29,4 @@ services:
       KAFKA_REPLICA_FETCH_MAX_BYTES: 52428800  # Set max fetch size to 50MB
     depends_on:
       - zookeeper
+    restart: always
