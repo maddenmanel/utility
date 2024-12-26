@@ -1,0 +1,27 @@
+services:
+  mysql:
+    image: unionstars/my-mysql-image:v2
+    container_name: mysql-container
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/my.cnf:ro
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./mysql-files:/var/lib/mysql-files  # 挂载 /var/lib/mysql-files 目录
+    networks:
+      - mysql_network
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  mysql_network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
